@@ -1,26 +1,24 @@
-import { notFound } from "next/navigation";
+import { notFound } from "next/navigation.js";
 import { eachDayOfInterval } from "date-fns";
-import { supabase } from "./supabase";
+import axios from "axios";
+import { CurrencyBangladeshiIcon } from "@heroicons/react/24/solid";
+// import { supabase } from "./supabase";
 
 /////////////
 // GET
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export async function getCabin(id) {
-  const { data, error } = await supabase
-    .from("cabins")
-    .select("*")
-    .eq("id", id)
-    .single();
+  try {
+    const res = await axios.get(`${API_URL}/cabins/${id}`);
+    const cabin = res.data.data.doc;
+    console.log("cabin", cabin);
 
-  // For testing
-  // await new Promise((res) => setTimeout(res, 2000));
-
-  if (error) {
-    console.error(error);
-    notFound();
+    return cabin;
+  } catch (err) {
+    console.error(err);
+    // notFound();
   }
-
-  return data;
 }
 
 export async function getCabinPrice(id) {
