@@ -22,34 +22,28 @@ export async function getCabin(id) {
 }
 
 export async function getCabinPrice(id) {
-  const { data, error } = await supabase
-    .from("cabins")
-    .select("regularPrice, discount")
-    .eq("id", id)
-    .single();
-
-  if (error) {
-    console.error(error);
+  try {
+    const allCabins = await getCabins();
+    const cabin = allCabins.find((cabin) => cabin._id === id);
+    console.log("cabin", cabin.regularPrice);
+    return cabin.regularPrice;
+  } catch (err) {
+    console.error(err);
+    // notFound();
   }
-
-  return data;
 }
 
 export const getCabins = async function () {
-  const { data, error } = await supabase
-    .from("cabins")
-    .select("id, name, maxCapacity, regularPrice, discount, image")
-    .order("name");
+  try {
+    const res = await axios.get(`${API_URL}/cabins`);
+    const cabins = res.data.data.doc;
+    // console.log("cabins", cabins);
 
-  // For testing
-  // await new Promise((res) => setTimeout(res, 2000));
-
-  if (error || !data) {
-    console.error(error || "No data returned");
-    throw new Error("Cabins could not be loaded");
+    return cabins;
+  } catch (err) {
+    console.error(err);
+    // notFound();
   }
-
-  return data;
 };
 
 // export async function getCabins() {
@@ -65,31 +59,25 @@ export const getCabins = async function () {
 
 // Guests are uniquely identified by their email address
 export async function getGuest(email) {
-  const { data, error } = await supabase
-    .from("guests")
-    .select("*")
-    .eq("email", email)
-    .single();
-
-  console.log("db select query data", data);
-
-  // No error here! We handle the possibility of no guest in the sign in callback
-  return data;
+  try {
+    const res = await axios.get(`${API_URL}/guests`);
+    const guests = res.data.data.doc;
+    const guest = guests.find((guest) => guest.email === email);
+    return guest;
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 export async function getBooking(id) {
-  const { data, error, count } = await supabase
-    .from("bookings")
-    .select("*")
-    .eq("id", id)
-    .single();
-
-  if (error) {
-    console.error(error);
-    throw new Error("Booking could not get loaded");
+  try {
+    const res = await axios.get(`${API_URL}/bookings/${id}`);
+    const booking = res.data.data.doc;
+    console.log(booking);
+    return booking;
+  } catch (err) {
+    console.error(err);
   }
-
-  return data;
 }
 
 export async function getBookings(guestId) {

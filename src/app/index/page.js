@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getCabin } from "../_lib/data-service";
+import { getBooking } from "../_lib/data-service";
 
 const HomePage = () => {
   const [cabin, setCabin] = useState(null);
 
   useEffect(() => {
     async function fetchCabin() {
-      const cabin = await getCabin("672bd5ddf01c948783c95f92");
+      const cabin = await getBooking("672bdf4a3c011039a58da8b6");
 
       setCabin(cabin);
     }
